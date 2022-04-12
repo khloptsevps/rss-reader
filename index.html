@@ -1,12 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RSS агрегатор</title>
 </head>
-<body>
-  
+<body class="d-flex min-vh-100 flex-column">
+    <main class="flex-grow-1">
+        <section class="container-fluid p-5 bg-dark">
+            <div class="row">
+                <div class="col-md-10 col-lg-8 mx-auto text-white">
+                    <h1 class="display-3">RSS агрегатор</h1>
+                    <p class="lead">Читаем RSS! Бодро и весело :)</p>
+                    <form action="">
+                        <div class="row">
+                            <div class="col">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" autofocus id="input_1" placeholder="RSS Ссылка" autocomplete="off">
+                                    <label class="text-dark" for="input_1">RSS Ссылка</label>
+                                  </div>
+                            </div>
+                            <button class="col-auto btn btn-lg btn-primary px-5 ms-2" type="submit">Добавить</button>
+                        </div>
+                    </form>
+                    <p class="text-muted mt-2">Пример: https://ru.hexlet.io/lessons.rss</p>
+                </div>
+            </div>
+        </section>
+        <section></section>
+    </main>
+    <footer class="footer border-top bg-light">
+        <div class="container">
+            <div class="text-center p-3">
+                <a href="https://ru.hexlet.io/professions/frontend/projects/11" target="_blank">Hexlet</a>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
