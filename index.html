@@ -12,23 +12,33 @@
             <div class="row">
                 <div class="col-md-10 col-lg-8 mx-auto text-white">
                     <h1 class="display-3">RSS агрегатор</h1>
-                    <p class="lead">Читаем RSS! Бодро и весело :)</p>
+                    <p class="lead">Начните читать RSS сегодня! Это легко, это красиво.</p>
                     <form action="">
                         <div class="row">
                             <div class="col">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" autofocus id="input_1" placeholder="RSS Ссылка" autocomplete="off">
+                                    <input type="text" name="input_url" id="input_url" class="form-control" autofocus required placeholder="RSS Ссылка" autocomplete="off">
                                     <label class="text-dark" for="input_1">RSS Ссылка</label>
                                   </div>
                             </div>
-                            <button class="col-auto btn btn-lg btn-primary px-5 ms-2" type="submit">Добавить</button>
+                            <button type="submit" class="col-auto btn btn-lg btn-primary px-5 ms-2">Добавить</button>
                         </div>
                     </form>
-                    <p class="text-muted mt-2">Пример: https://ru.hexlet.io/lessons.rss</p>
+                    <p class="text-muted mt-2 mb-0">Пример: https://ru.hexlet.io/lessons.rss</p>
+                    <p class="feedback m-0 position-absolute small"></p>
                 </div>
             </div>
         </section>
-        <section></section>
+        <section class="container-fluid p-5 bg-light">
+            <div class="row">
+                <div class="col border">
+                    <p>Карточка с постами</p>
+                </div>
+                <div class="col border">
+                    <p>Карточка с фидами</p>
+                </div>
+            </div>
+        </section>
     </main>
     <footer class="footer border-top bg-light">
         <div class="container">
