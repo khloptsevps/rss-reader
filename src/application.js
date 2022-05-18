@@ -1,38 +1,28 @@
 import i18next from 'i18next';
 import * as yup from 'yup';
 import onChange from 'on-change';
-import { last } from 'lodash';
+import axios from 'axios';
+import parser from './utils/parser.js';
 import ru from './locales/ru.js';
-import renderErrors, { handleProcessState } from './render.js';
+import render from './render.js';
 
-const validator = (linksContainer) => {
+const routes = {
+  rss: (link) => `https://allorigins.hexlet.app/get?disableCache=true&url=${link}`,
+};
+
+const validator = (feedsContainer, link) => {
   yup.setLocale({
     string: {
-      url: (v) => ({ key: 'url.errors.notValidUrl', values: v }),
+      url: (v) => ({ key: 'errors.notValidUrl', values: v }),
     },
     mixed: {
-      notOneOf: (v) => ({ key: 'url.errors.doubleUrl', values: v }),
+      notOneOf: (v) => ({ key: 'errors.doubleUrl', values: v }),
     },
   });
   const schema = yup.string()
     .url()
-    .notOneOf([linksContainer]);
-  return schema;
-};
-
-const render = (elements, i18nInstance) => (path, value) => {
-  switch (path) {
-    case 'form.errors':
-      renderErrors(elements, value, i18nInstance);
-      break;
-    case 'form.processState':
-      console.log('Текущий процесс:', value);
-      handleProcessState(elements, value);
-      break;
-    default:
-      console.log(`Неизвестный стейт ${path}`);
-      break;
-  }
+    .notOneOf(feedsContainer.map(({ url }) => url));
+  return schema.validate(link);
 };
 
 export default () => {
@@ -49,41 +39,66 @@ export default () => {
     submitButton: document.querySelector('button[type="submit"]'),
     input: document.querySelector('#input_url'),
     feedback: document.querySelector('.feedback'),
+    feedsContainer: document.querySelector('.feeds'),
+    postsContainer: document.querySelector('.posts'),
   };
-
-  const linksContainer = [];
 
   const state = onChange({
     form: {
       processState: 'filling',
       processError: null,
-      errors: null,
     },
+    content: {
+      feeds: [],
+      posts: [],
+    },
+    error: null,
   }, render(elements, i18nInstance));
 
-  const { form, input } = elements;
+  const { form } = elements;
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const url = formData.get('input_url');
-    validator(linksContainer).validate(url)
+
+    const result = validator(state.content.feeds, url);
+    result
       .then((link) => {
-        state.form.errors = null;
-        linksContainer.push(link);
-      })
-      .then(() => {
+        state.error = null;
         state.form.processState = 'sending';
-        console.log(`Делаю запрос на адрес ${last(linksContainer)}`);
-        setTimeout(() => {
-          console.log('Готово!');
-          state.form.processState = 'filling';
-          form.reset();
-          input.focus();
-        }, 2000);
+        return axios.get(routes.rss(link));
       })
-      .catch((err) => {
-        state.form.errors = { rssUrlErr: err.message.key };
+      .then(({ data }) => parser(data))
+      .then(({ feed, posts }) => {
+        // state.form.processState = 'loaded';
+        state.content.feeds.push(feed);
+        state.content.posts.unshift(...posts);
+        state.form.processState = 'filling';
+      })
+      .catch((error) => {
+        switch (error.name) {
+          case 'ValidationError':
+            console.log('Ошибка валидации');
+            state.error = error.message.key;
+            state.form.processState = 'filling';
+            break;
+          case 'AxiosError':
+            console.log('Ошибка Axios');
+            state.error = 'errors.networkError';
+            state.form.processState = 'filling';
+            break;
+          case 'ParserError':
+            console.log(error);
+            state.error = 'errors.notContainValidRss';
+            state.form.processState = 'filling';
+            break;
+          default:
+            console.log('Unknown error:', error);
+            state.error = 'errors.somethingWentWrong';
+            state.form.processState = 'filling';
+            break;
+        }
       });
   });
 };
