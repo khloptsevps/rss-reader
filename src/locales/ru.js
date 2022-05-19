@@ -7,13 +7,13 @@ export default {
       networkError: 'Сетевая ошибка, попробуйте позже',
       somethingWentWrong: 'Упс... что-то пошло не так',
     },
-    success: 'RSS успешно загружен!',
+    loaded: 'RSS успешно загружен!',
     buttons: {
       previewButton: 'Просмотр',
       readCompletelyButton: 'Читать полностью',
       closeButton: 'Закрыть',
     },
-    feedsTitle: 'Фиды',
-    postsTitle: 'Посты',
+    feeds: 'Фиды',
+    posts: 'Посты',
   },
 };
