@@ -1,17 +1,15 @@
 import { uniqueId } from 'lodash';
 
-const parser = (data) => new Promise((resolve, reject) => {
+const parser = (data) => {
   const domParser = new DOMParser();
-  const xmlString = data.contents;
-  const xmlDOM = domParser.parseFromString(xmlString, 'application/xml');
+  const xmlDOM = domParser.parseFromString(data.contents, 'application/xml');
 
   const parserError = xmlDOM.querySelector('parsererror');
 
   if (parserError) {
     const myError = new Error(parserError.textContent);
     myError.name = 'ParserError';
-    reject(myError);
-    return;
+    return { error: myError };
   }
 
   const searchElements = {
@@ -24,8 +22,6 @@ const parser = (data) => new Promise((resolve, reject) => {
   const feedDescription = xmlDOM.querySelector(searchElements.description).textContent;
   const feedUrl = data.status.url;
 
-  const items = xmlDOM.querySelectorAll('item');
-
   const feed = {
     id: uniqueId(),
     url: feedUrl,
@@ -33,20 +29,17 @@ const parser = (data) => new Promise((resolve, reject) => {
     description: feedDescription,
   };
 
-  const posts = [...items].map((item) => {
-    const postTitle = item.querySelector(searchElements.title).textContent;
-    const postDescription = item.querySelector(searchElements.description).textContent;
-    const postLink = item.querySelector(searchElements.link).textContent;
-    const post = {
-      id: uniqueId(),
-      feedId: feed.id,
-      title: postTitle,
-      description: postDescription,
-      link: postLink,
-    };
-    return post;
-  });
-  resolve({ feed, posts });
-});
+  const items = xmlDOM.querySelectorAll('item');
+
+  const posts = [...items].map((item) => ({
+    id: uniqueId(),
+    feedId: feed.id,
+    title: item.querySelector(searchElements.title).textContent,
+    description: item.querySelector(searchElements.description).textContent,
+    link: item.querySelector(searchElements.link).textContent,
+  }));
+
+  return { feed, posts };
+};
 
 export default parser;
