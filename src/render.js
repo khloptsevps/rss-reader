@@ -16,6 +16,7 @@ const renderErrors = (elements, error, i18nInstance) => {
       feedback.textContent = i18nInstance.t(error.message.key);
       break;
     case 'AxiosError':
+      console.error(error.message);
       feedback.classList.add('text-danger');
       feedback.textContent = i18nInstance.t('errors.networkError');
       break;
@@ -111,19 +112,19 @@ const renderFeeds = (feeds) => {
 
 const renderPosts = (posts) => {
   const postsList = document.querySelector('.posts ul');
-  const liElements = posts.map(({ title, link }) => {
+  const liElements = posts.map(({ title, link, postId }) => {
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item', 'bg-light', 'border-0', 'd-flex', 'align-items-start');
 
     const aEl = document.createElement('a');
-    aEl.classList.add('link-primary', 'fw-bold');
     aEl.setAttribute('href', link);
+    aEl.classList.add('link-primary', 'fw-bold');
+    aEl.dataset.id = postId;
     aEl.setAttribute('target', '_blank');
 
     aEl.textContent = title;
 
     liEl.append(aEl);
-
     return liEl;
   });
   postsList.replaceChildren(...liElements);
