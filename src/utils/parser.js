@@ -1,6 +1,4 @@
-import { uniqueId } from 'lodash';
-
-const parser = (data) => {
+export default (data) => {
   const domParser = new DOMParser();
   const xmlDOM = domParser.parseFromString(data.contents, 'application/xml');
 
@@ -9,6 +7,7 @@ const parser = (data) => {
   if (parserError) {
     const myError = new Error(parserError.textContent);
     myError.name = 'ParserError';
+    myError.isParserError = true;
     return { error: myError };
   }
 
@@ -18,28 +17,21 @@ const parser = (data) => {
     link: 'link',
   };
 
-  const feedTitle = xmlDOM.querySelector(searchElements.title).textContent;
-  const feedDescription = xmlDOM.querySelector(searchElements.description).textContent;
-  const feedUrl = data.status.url;
+  const xmlItemElements = xmlDOM.querySelectorAll('item');
 
-  const feed = {
-    id: uniqueId(),
-    url: feedUrl,
-    title: feedTitle,
-    description: feedDescription,
-  };
-
-  const items = xmlDOM.querySelectorAll('item');
-
-  const posts = [...items].map((item) => ({
-    id: uniqueId(),
-    feedId: feed.id,
+  const items = [...xmlItemElements].map((item) => ({
     title: item.querySelector(searchElements.title).textContent,
     description: item.querySelector(searchElements.description).textContent,
     link: item.querySelector(searchElements.link).textContent,
   }));
 
-  return { feed, posts };
+  const rss = {
+    channel: {
+      title: xmlDOM.querySelector(searchElements.title).textContent,
+      description: xmlDOM.querySelector(searchElements.description).textContent,
+      url: data.status.url,
+    },
+    items,
+  };
+  return rss;
 };
-
-export default parser;
