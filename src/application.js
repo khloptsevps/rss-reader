@@ -1,29 +1,15 @@
 import i18next from 'i18next';
-import * as yup from 'yup';
 import onChange from 'on-change';
 import axios from 'axios';
+import { uniqueId } from 'lodash';
 import parser from './utils/parser.js';
 import ru from './locales/ru.js';
 import render from './render.js';
+import validator from './utils/validator.js';
+import updater from './utils/updater.js';
 
 const routes = {
-  rss: (link) => `https://allorigins.hexlet.app/get?disableCache=true&url=${link}`,
-};
-
-yup.setLocale({
-  string: {
-    url: (v) => ({ key: 'errors.notValidUrl', values: v }),
-  },
-  mixed: {
-    notOneOf: (v) => ({ key: 'errors.doubleUrl', values: v }),
-  },
-});
-
-const validator = (feedsContainer, link) => {
-  const schema = yup.string()
-    .url()
-    .notOneOf(feedsContainer.map(({ url }) => url));
-  return schema.validate(link);
+  rss: (link) => `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(link)}`,
 };
 
 export default () => {
@@ -65,9 +51,9 @@ export default () => {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const url = formData.get('input_url');
+    const rssUrl = formData.get('input_url');
 
-    const result = validator(state.content.feeds, url);
+    const result = validator(state.content.feeds, rssUrl);
     result
       .then((link) => {
         state.error = null;
@@ -75,13 +61,18 @@ export default () => {
         return axios.get(routes.rss(link));
       })
       .then(({ data }) => {
-        const content = parser(data);
-        if (content.error) {
-          throw content.error;
+        const output = parser(data);
+        if (output.error) {
+          throw output.error;
         }
-        const { feed, posts } = content;
+        const { channel, items } = output;
+        channel.id = uniqueId();
         state.form.processState = 'loaded';
-        state.content.feeds.push(feed);
+        state.content.feeds.push(channel);
+        const posts = items.map((item) => Object.assign(item, {
+          feedId: channel.id,
+          postId: uniqueId(),
+        }));
         state.content.posts.unshift(...posts);
       })
       .catch((error) => {
@@ -89,4 +80,5 @@ export default () => {
         state.form.processState = 'filling';
       });
   });
+  updater(state, uniqueId);
 };
