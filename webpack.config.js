@@ -14,6 +14,7 @@ const devServer = (isDev) => (isDev ? {
 const outputDirPath = path.join(path.resolve(), './dist');
 
 export default ({ develop }) => ({
+  devtool: 'source-map',
   mode: develop ? 'development' : 'production',
   entry: './src/index.js',
   output: {
