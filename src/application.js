@@ -8,10 +8,6 @@ import render from './render.js';
 import validator from './utils/validator.js';
 import updater from './utils/updater.js';
 
-const routes = {
-  rss: (link) => `https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(link)}`,
-};
-
 export default () => {
   const i18nInstance = i18next.createInstance();
   i18nInstance
@@ -66,7 +62,7 @@ export default () => {
       .then((link) => {
         state.error = null;
         state.form.processState = 'sending';
-        return axios.get(routes.rss(link));
+        return axios.get(new URL(`/get?disableCache=true&url=${encodeURIComponent(link)}`, 'https://allorigins.hexlet.app'));
       })
       .then(({ data }) => {
         const output = parser(data);

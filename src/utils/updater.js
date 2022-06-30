@@ -9,7 +9,7 @@ const updater = (state) => {
     setTimeout(updater, 5000, state);
     return;
   }
-  const promises = feeds.map(({ id, url }) => axios.get(`https://allorigins.hexlet.app/get?disableCache=true&url=${encodeURIComponent(url)}`)
+  const promises = feeds.map(({ id, url }) => axios.get(new URL(`/get?disableCache=true&url=${encodeURIComponent(url)}`, 'https://allorigins.hexlet.app'))
     .then(({ data }) => {
       const output = parser(data);
       const { items } = output;
