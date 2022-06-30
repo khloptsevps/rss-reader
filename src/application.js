@@ -62,7 +62,9 @@ export default () => {
       .then((link) => {
         state.error = null;
         state.form.processState = 'sending';
-        return axios.get(new URL(`/get?disableCache=true&url=${encodeURIComponent(link)}`, 'https://allorigins.hexlet.app'));
+        const url = new URL(`/get?disableCache=true&url=${encodeURIComponent(link)}`, 'https://allorigins.hexlet.app');
+        console.log(url);
+        return axios.get(url);
       })
       .then(({ data }) => {
         const output = parser(data);
@@ -80,6 +82,7 @@ export default () => {
         state.content.posts.unshift(...posts);
       })
       .catch((error) => {
+        console.log(error);
         state.error = error;
         state.form.processState = 'filling';
       });
