@@ -21,7 +21,7 @@ export default () => {
     rssForm: {
       form: document.querySelector('form'),
       submitButton: document.querySelector('button[type="submit"]'),
-      input: document.querySelector('#input_url'),
+      input: document.querySelector('#url-input'),
       feedback: document.querySelector('.feedback'),
     },
     containers: {
@@ -55,7 +55,7 @@ export default () => {
   form.addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const rssUrl = formData.get('input_url');
+    const rssUrl = formData.get('url');
 
     const result = validator(state.content.feeds, rssUrl);
     result
@@ -63,7 +63,6 @@ export default () => {
         state.error = null;
         state.form.processState = 'sending';
         const url = new URL(`/get?disableCache=true&url=${encodeURIComponent(link)}`, 'https://allorigins.hexlet.app');
-        console.log(url);
         return axios.get(url);
       })
       .then(({ data }) => {
