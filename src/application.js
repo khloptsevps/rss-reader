@@ -29,22 +29,30 @@ export default () => {
       feedback: document.querySelector('.feedback'),
     },
     containers: {
-      feeds: document.querySelector('.feeds'),
-      posts: document.querySelector('.posts'),
+      feedsBox: document.querySelector('.feeds'),
+      postsBox: document.querySelector('.posts'),
+    },
+    modalWindow: {
+      title: document.querySelector('h5.modal-title'),
+      body: document.querySelector('.modal-body'),
+      link: document.querySelector('.modal-footer a'),
     },
   };
 
   const state = onChange({
     form: {
       processState: 'filling',
-      processError: null,
     },
     content: {
       feeds: [],
       posts: [],
     },
+    uiState: {
+      seenPostsId: [],
+    },
+    modal: {},
     error: null,
-  }, render(elements, i18nInstance));
+  }, (path, value) => render(path, value, elements, i18nInstance, state));
 
   const { form } = elements.rssForm;
 
@@ -80,5 +88,5 @@ export default () => {
         state.form.processState = 'filling';
       });
   });
-  updater(state, uniqueId);
+  updater(state);
 };
