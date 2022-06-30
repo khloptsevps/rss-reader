@@ -1,4 +1,6 @@
 /* eslint-disable no-param-reassign */
+import { includes } from 'lodash';
+
 const renderErrors = (elements, error, i18nInstance) => {
   const { input, feedback } = elements.rssForm;
 
@@ -52,9 +54,9 @@ const buildCard = (i18nInstance, cardTitle) => {
 };
 
 const renderCards = (elements, i18nInstance) => {
-  const { feeds, posts } = elements.containers;
-  feeds.replaceChildren(buildCard(i18nInstance, 'feeds'));
-  posts.replaceChildren(buildCard(i18nInstance, 'posts'));
+  const { feedsBox, postsBox } = elements.containers;
+  feedsBox.replaceChildren(buildCard(i18nInstance, 'feeds'));
+  postsBox.replaceChildren(buildCard(i18nInstance, 'posts'));
 };
 
 const handleProcessState = (elements, processState, i18nInstance) => {
@@ -110,44 +112,90 @@ const renderFeeds = (feeds) => {
   feedsList.replaceChildren(...liElements);
 };
 
-const renderPosts = (posts) => {
+const handleSeenPosts = (state) => (evt) => {
+  const { id } = evt.target.dataset;
+  if (!includes(state.uiState.seenPostsId, id)) {
+    state.uiState.seenPostsId.push(id);
+  }
+  const post = state.content.posts.find(({ postId }) => postId === id);
+  state.modal = {
+    title: post.title,
+    body: post.description,
+    link: post.link,
+  };
+};
+
+const renderPosts = (posts, i18nInstance, state, elements) => {
   const postsList = document.querySelector('.posts ul');
-  const liElements = posts.map(({ title, link, postId }) => {
+  const liElements = posts.map((post) => {
+    const { title, link, postId } = post;
     const liEl = document.createElement('li');
-    liEl.classList.add('list-group-item', 'bg-light', 'border-0', 'd-flex', 'align-items-start');
+    liEl.addEventListener('click', handleSeenPosts(state, elements));
+
+    liEl.classList.add('list-group-item', 'bg-light', 'border-0', 'd-flex', 'align-items-start', 'justify-content-between');
 
     const aEl = document.createElement('a');
     aEl.setAttribute('href', link);
-    aEl.classList.add('link-primary', 'fw-bold');
+    if (!includes(state.uiState.seenPostsId, postId)) {
+      aEl.classList.add('link-primary', 'fw-bold');
+    } else {
+      aEl.classList.add('link-secondary', 'fw-normal');
+    }
     aEl.dataset.id = postId;
     aEl.setAttribute('target', '_blank');
 
     aEl.textContent = title;
 
-    liEl.append(aEl);
+    const previewButton = document.createElement('button');
+    previewButton.textContent = i18nInstance.t('buttons.previewButton');
+    previewButton.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+    previewButton.dataset.id = postId;
+    previewButton.dataset.bsToggle = 'modal';
+    previewButton.dataset.bsTarget = '#modal';
+
+    liEl.append(aEl, previewButton);
+
     return liEl;
   });
   postsList.replaceChildren(...liElements);
 };
 
-const render = (elements, i18nInstance) => (path, value) => {
+const renderSeenPosts = (seenPostsId) => {
+  seenPostsId.forEach((id) => {
+    const seenElement = document.querySelector(`a[data-id="${id}"`);
+    seenElement.classList.remove('link-primary', 'fw-bold');
+    seenElement.classList.add('link-secondary', 'fw-normal');
+  });
+};
+
+const renderModal = (content, modalWindow) => {
+  modalWindow.title.textContent = content.title;
+  modalWindow.body.textContent = content.body;
+  modalWindow.link.setAttribute('href', content.link);
+};
+
+const render = (path, value, elements, i18nInstance, watchedState) => {
   switch (path) {
     case 'error':
       renderErrors(elements, value, i18nInstance);
       break;
     case 'form.processState':
-      // console.log('Текущий процесс:', value);
       handleProcessState(elements, value, i18nInstance);
       break;
     case 'content.feeds':
       renderFeeds(value);
       break;
     case 'content.posts':
-      renderPosts(value);
+      renderPosts(value, i18nInstance, watchedState, elements);
+      break;
+    case 'uiState.seenPostsId':
+      renderSeenPosts(value);
+      break;
+    case 'modal':
+      renderModal(value, elements.modalWindow);
       break;
     default:
       console.log(`Неизвестный стейт ${path}`);
-      console.log(value);
       break;
   }
 };
