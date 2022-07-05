@@ -7,8 +7,7 @@ export default (data) => {
   if (parserError) {
     const myError = new Error(parserError.textContent);
     myError.name = 'ParserError';
-    myError.isParserError = true;
-    return { error: myError };
+    throw myError;
   }
 
   const searchElements = {
@@ -29,7 +28,6 @@ export default (data) => {
     channel: {
       title: xmlDOM.querySelector(searchElements.title).textContent,
       description: xmlDOM.querySelector(searchElements.description).textContent,
-      url: data.status.url,
     },
     items,
   };
