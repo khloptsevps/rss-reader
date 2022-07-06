@@ -138,9 +138,9 @@ const renderPosts = (posts, i18nInstance, state, elements) => {
     const aEl = document.createElement('a');
     aEl.setAttribute('href', link);
     if (!includes(state.uiState.seenPostsId, postId)) {
-      aEl.classList.add('link-primary', 'fw-bold');
+      aEl.classList.add('fw-bold');
     } else {
-      aEl.classList.add('link-secondary', 'fw-normal');
+      aEl.classList.add('fw-normal');
     }
     aEl.dataset.id = postId;
     aEl.setAttribute('target', '_blank');
