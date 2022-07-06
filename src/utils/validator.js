@@ -17,10 +17,6 @@ export const initSchema = () => {
   return schema;
 };
 
-export default (schema, feeds, link) => {
-  // schema = yup.string()
-  //   .notOneOf(feeds.map(({ url }) => url));
-  Object.assign(schema, yup.string()
-    .notOneOf(feeds.map(({ url }) => url)));
-  return schema.validate(link);
-};
+export default (schema, feeds, link) => (
+  schema.notOneOf(feeds.map(({ url }) => url)).validate(link)
+);
