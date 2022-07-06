@@ -140,7 +140,7 @@ const renderPosts = (posts, i18nInstance, state, elements) => {
     if (!includes(state.uiState.seenPostsId, postId)) {
       aEl.classList.add('fw-bold');
     } else {
-      aEl.classList.add('fw-normal');
+      aEl.classList.add('fw-normal', 'link-secondary');
     }
     aEl.dataset.id = postId;
     aEl.setAttribute('target', '_blank');
