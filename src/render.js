@@ -4,9 +4,9 @@ import { includes } from 'lodash';
 const renderErrors = (elements, error, i18nInstance) => {
   const { input, feedback } = elements.rssForm;
 
-  const name = error === null ? null : error.name;
+  const errorName = error === null ? null : error.name;
 
-  switch (name) {
+  switch (errorName) {
     case null:
       input.classList.remove('is-invalid');
       feedback.classList.remove('text-danger');
@@ -76,6 +76,7 @@ const handleProcessState = (elements, processState, i18nInstance) => {
     case 'filling':
       submitButton.disabled = false;
       input.disabled = false;
+      input.focus();
       break;
     case 'loaded':
       feedback.classList.remove('text-danger');
