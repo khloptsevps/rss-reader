@@ -28,6 +28,9 @@ export default ({ develop }) => ({
       filename: './styles/styles.css',
     }),
   ],
+  performance: {
+    hints: false,
+  },
   module: {
     rules: [
       {
