@@ -73,9 +73,15 @@ const handleProcessState = (elements, processState, i18nInstance) => {
       submitButton.disabled = true;
       input.disabled = true;
       break;
+    case 'failed':
+      submitButton.disabled = false;
+      input.disabled = false;
+      input.focus();
+      break;
     case 'filling':
       submitButton.disabled = false;
       input.disabled = false;
+      form.reset();
       input.focus();
       break;
     case 'loaded':
@@ -83,12 +89,9 @@ const handleProcessState = (elements, processState, i18nInstance) => {
       feedback.classList.add('text-success');
       feedback.textContent = i18nInstance.t(processState);
       renderCards(elements, i18nInstance);
-      submitButton.disabled = false;
-      input.disabled = false;
-      form.reset();
-      input.focus();
       break;
     default:
+      console.warn(`Unknown processState! Check this: ${processState}`);
       break;
   }
 };
@@ -196,7 +199,7 @@ const render = (path, value, elements, i18nInstance, watchedState) => {
       renderModal(value, elements.modalWindow);
       break;
     default:
-      console.log(`Неизвестный стейт ${path}`);
+      console.log(`Unknown state: ${path}`);
       break;
   }
 };
