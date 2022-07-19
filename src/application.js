@@ -78,10 +78,11 @@ export default () => {
           postId: uniqueId(),
         }));
         state.content.posts.unshift(...posts);
+        state.form.processState = 'filling';
       })
       .catch((error) => {
         state.error = error;
-        state.form.processState = 'filling';
+        state.form.processState = 'failed';
       });
   });
   updater(state);
