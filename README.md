@@ -1,10 +1,9 @@
 [![Node CI](https://github.com/khloptsevps/frontend-project-lvl3/actions/workflows/nodejs.yml/badge.svg?branch=main)](https://github.com/khloptsevps/frontend-project-lvl3/actions/workflows/nodejs.yml) [![Maintainability](https://api.codeclimate.com/v1/badges/4e93b7cac69c6e43979a/maintainability)](https://codeclimate.com/github/khloptsevps/frontend-project-lvl3/maintainability)
 
-# "RSS агрегатор / RSS Reader"
+# RSS агрегатор / RSS Reader
+Учебный проект школы программирования ["Hexlet"](https://ru.hexlet.io/?ref=252944). 
 
-## Описание
-
-Учебный проект школы программирования ["Hexlet"](https://ru.hexlet.io/?ref=252944).  
+## Описание 
 
 Сервис для агрегации RSS-потоков, с помощью которых удобно читать разнообразные источники, например, блоги. Он позволяет добавлять неограниченное количество RSS-лент, сам их обновляет и добавляет новые записи в общий поток.
 
@@ -60,6 +59,12 @@ $ make install
 
 ```sh
 $ make develop
+```
+
+## Сборка / Build
+
+```sh
+$ make build
 ```
 
 ## Ссылка на приложение / Link to app
